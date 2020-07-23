@@ -12,8 +12,20 @@ app.use(express.static(path.join(__dirname,'public')))
 
 //Run when client connect
 io.on('connection',socket=>{
-    console.log('New WS connection...')
     socket.emit('message','Welcome to ChatCord')
+
+    //Broadcast when a user connects
+    socket.broadcast.emit('message','A user has joined the chart')
+    
+    //Run when client disconnects
+    socket.on('disconnect',()=>{
+        io.emit('message','A user has left the chat')
+    })
+
+    //Listen for chatmessage
+    socket.on('chatMessage',msg=>{
+        io.emit('message',msg)
+    })
 })
 
 const PORT=3000||process.env.PORT
